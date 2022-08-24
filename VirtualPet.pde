@@ -18,7 +18,7 @@ void setup() {
   //temporary
   PImage bg = loadImage("sukon.png");
   bg.resize(WIDTH, HEIGHT);
-  background(bg);
+  //background(bg);
 
   head = createShape();
   head.beginShape();
