@@ -1,4 +1,8 @@
-# Gitignore for APCS Lowell repositories
+# Gitignore for APCS Lowell repositories + AiP24 Dev Stuff
 
 # Ignore compiled processing class files
 build-tmp/
+
+# Ignore VSCode(ium) compiled Processing extension class files
+out/
+
