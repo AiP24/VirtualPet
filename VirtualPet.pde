@@ -76,7 +76,7 @@ void setup() {
   //temporary
   //PImage bg = loadImage("sukon.png");
   //bg.resize(WIDTH, HEIGHT);
-  //background(bg);
+  background(50, 50, 50);
 }
 void draw() {
   strokeWeight(STROKE);
