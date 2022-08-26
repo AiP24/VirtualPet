@@ -1,4 +1,4 @@
-![](fokusu.png)
+![](fokusu-300.png)  
 Virtual Pet
 =============
 
