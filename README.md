@@ -1,4 +1,4 @@
-![](Penguin.JPG)   
+![](fokusu.png)
 Virtual Pet
 =============
 
