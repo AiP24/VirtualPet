@@ -1,5 +1,5 @@
-static int WIDTH = 500;
-static int HEIGHT = 500;
+static int WIDTH = 1000;
+static int HEIGHT = 1000;
 static int STROKE = rw(.015);
 static int rw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos);
@@ -72,7 +72,7 @@ void drawTail() {
 void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
-  size(500, 500);
+  size(1000, 1000);
   //temporary
   //PImage bg = loadImage("sukon.png");
   //bg.resize(WIDTH, HEIGHT);
