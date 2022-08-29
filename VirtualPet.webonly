@@ -1,7 +1,3 @@
-import processing.serial.*;
-import cc.arduino.*;
-Arduino arduino;  
-
 static int WIDTH = 500;
 static int HEIGHT = 500;
 static int STROKE = rw(.015);
@@ -19,7 +15,7 @@ void drawLeft() {
   vertex(rw(.35), rh(.775));
   endShape();
 }
-void drawHead(boolean eyesClosed) {
+void drawHead() {
   //I would have used PShape and createShape() but processing.js is outdated and I don't feel like migrating to p5.js
   /*
   bezier(1st point, 1st control, 2nd control, 2nd point)
@@ -28,23 +24,9 @@ void drawHead(boolean eyesClosed) {
   bezier(rw(.2), rh(.6), rw(.3), rh(.75), rw(.6), rh(.75), rw(.71), rh(.6));
   stroke(0, 0, 0);
   strokeWeight(STROKE);
-  if (eyesClosed) {
-    beginShape(LINES);
-    vertex(rw(.35), rh(.42));
-    vertex(rw(.4), rh(.48));
-    vertex(rw(.35), rh(.51));
-    endShape();
-    //beginShape(LINES);
-    //vertex(rw(), rh());
-    //vertex(rw(), rh());
-    //vertex(rw(), rh());
-    //endShape();
-  }
-  else {
-    bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
-    bezier(rw(.56), rh(.425), rw(.555), rh(.43), rw(.54), rh(.5), rw(.54), rh(.51)); //left eye
-  }
-  
+  bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
+  bezier(rw(.56), rh(.425), rw(.555), rh(.43), rw(.54), rh(.5), rw(.54), rh(.51)); //left eye
+
   fill(254, 150, 141);
   beginShape(POLYGON);
   vertex(rw(.405), rh(.54));
@@ -91,9 +73,12 @@ void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
   size(500, 500);
-  arduino = new Arduino(this, Arduino.list()[0], 57600);
+  //temporary
+  //PImage bg = loadImage("sukon.png");
+  //bg.resize(WIDTH, HEIGHT);
+  background(50, 50, 50);
 }
-void drawEars() {
+void draw() {
   strokeWeight(STROKE);
   fill(255, 255, 255);
   triangle(rw(.3), rh(.1), rw(.23), rh(.5), rw(.4), rh(.4));
@@ -104,14 +89,8 @@ void drawEars() {
   triangle(rw(.635), rh(.2), rw(.68), rh(.6), rw(.51), rh(.45));
   strokeWeight(STROKE);
   fill(255, 255, 255);
-}
-void draw() {
-  int light = arduino.analogRead(5);
-  int bg = Math.round(light*(1023/255.0));
-  background(bg, bg, bg);
-  drawEars();
   drawLeft();
   drawTail();
   drawBody();
-  drawHead(light < 256);
+  drawHead();
 }
