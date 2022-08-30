@@ -4,12 +4,16 @@ Arduino arduino;
 
 static int WIDTH = 500;
 static int HEIGHT = 500;
-static int STROKE = rw(.015);
-static int rw(float xPos) { //Relative to Width
+static int STROKE = Math.round(WIDTH*.015);
+
+static int trw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos);
 }
+static int rw(float xPos) { //Relative to Width
+  return Math.round(WIDTH*xPos)-(WIDTH/2);
+}
 static int rh(float yPos) { //Relative to Height
-  return Math.round(HEIGHT*yPos);
+  return Math.round(HEIGHT*yPos)-(HEIGHT/2);
 }
 //for debugging without an actual arduino
 boolean arduinoEnabled = true;
@@ -21,7 +25,7 @@ void drawLeft() {
   vertex(rw(.35), rh(.775));
   endShape();
 }
-void drawHead(boolean eyesClosed) {
+void drawHead(int eyeMode) {
   //I would have used PShape and createShape() but processing.js is outdated and I don't feel like migrating to p5.js
   /*
   bezier(1st point, 1st control, 2nd control, 2nd point)
@@ -30,7 +34,10 @@ void drawHead(boolean eyesClosed) {
   bezier(rw(.2), rh(.6), rw(.3), rh(.75), rw(.6), rh(.75), rw(.71), rh(.6));
   stroke(0, 0, 0);
   strokeWeight(STROKE);
-  if (eyesClosed) {
+  if (eyeMode == 0) {
+    bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
+    bezier(rw(.56), rh(.425), rw(.555), rh(.43), rw(.54), rh(.5), rw(.54), rh(.51)); //left eye
+  } else if (eyeMode == 1) {
     beginShape(POLYGON);
     vertex(rw(.35), rh(.42));
     vertex(rw(.4), rh(.45));
@@ -41,10 +48,8 @@ void drawHead(boolean eyesClosed) {
     vertex(rw(.5), rh(.45));
     vertex(rw(.56), rh(.5));
     endShape();
-  }
-  else {
-    bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
-    bezier(rw(.56), rh(.425), rw(.555), rh(.43), rw(.54), rh(.5), rw(.54), rh(.51)); //left eye
+  } else if (eyeMode == 2) {
+    
   }
   
   fill(254, 150, 141);
@@ -114,18 +119,26 @@ void drawEars() {
 }
 void draw() {
   int light;
+  int sound;
+  int offset;
   int bg;
   if (arduinoEnabled) {
     light = arduino.analogRead(5);
+    sound = arduino.analogRead(4);
     bg = Math.round(light*(1023/255.0));
   } else {
     light = 200;
+    sound = 0;
     bg = 100;
   }
   background(bg, bg, bg);
+  if (sound > 350) {
+    offset = trw((sound - 340)/5000.0);
+  } else offset = 0;
+  translate(WIDTH/2.0+offset, HEIGHT/2.0);
   drawEars();
   drawLeft();
   drawTail();
   drawBody();
-  drawHead(light < 256);
+  drawHead(light < 260 ? 1 : 0);
 }
