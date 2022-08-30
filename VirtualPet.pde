@@ -11,6 +11,8 @@ static int rw(float xPos) { //Relative to Width
 static int rh(float yPos) { //Relative to Height
   return Math.round(HEIGHT*yPos);
 }
+//for debugging without an actual arduino
+boolean arduinoEnabled = true;
 void drawLeft() {
   beginShape(POLYGON);
   vertex(rw(.35), rh(.72));
@@ -29,16 +31,16 @@ void drawHead(boolean eyesClosed) {
   stroke(0, 0, 0);
   strokeWeight(STROKE);
   if (eyesClosed) {
-    beginShape(LINES);
+    beginShape(POLYGON);
     vertex(rw(.35), rh(.42));
-    vertex(rw(.4), rh(.48));
-    vertex(rw(.35), rh(.51));
+    vertex(rw(.4), rh(.45));
+    vertex(rw(.35), rh(.5));
     endShape();
-    //beginShape(LINES);
-    //vertex(rw(), rh());
-    //vertex(rw(), rh());
-    //vertex(rw(), rh());
-    //endShape();
+    beginShape(POLYGON);
+    vertex(rw(.56), rh(.42));
+    vertex(rw(.5), rh(.45));
+    vertex(rw(.56), rh(.5));
+    endShape();
   }
   else {
     bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
@@ -91,7 +93,12 @@ void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
   size(500, 500);
-  arduino = new Arduino(this, Arduino.list()[0], 57600);
+  try {
+    arduino = new Arduino(this, Arduino.list()[0], 57600);
+  }
+  catch (ArrayIndexOutOfBoundsException e) {
+    arduinoEnabled = false;
+  }
 }
 void drawEars() {
   strokeWeight(STROKE);
@@ -106,8 +113,15 @@ void drawEars() {
   fill(255, 255, 255);
 }
 void draw() {
-  int light = arduino.analogRead(5);
-  int bg = Math.round(light*(1023/255.0));
+  int light;
+  int bg;
+  if (arduinoEnabled) {
+    light = arduino.analogRead(5);
+    bg = Math.round(light*(1023/255.0));
+  } else {
+    light = 200;
+    bg = 100;
+  }
   background(bg, bg, bg);
   drawEars();
   drawLeft();
