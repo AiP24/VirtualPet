@@ -9,6 +9,9 @@ static int STROKE = Math.round(WIDTH*.015);
 static int trw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos);
 }
+static int trh(float yPos) { //Relative to Height
+  return Math.round(HEIGHT*yPos);
+}
 static int rw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos)-(WIDTH/2);
 }
@@ -25,7 +28,7 @@ void drawLeft() {
   vertex(rw(.35), rh(.775));
   endShape();
 }
-void drawHead(int eyeMode) {
+void drawHead(boolean eyeMode) {
   //I would have used PShape and createShape() but processing.js is outdated and I don't feel like migrating to p5.js
   /*
   bezier(1st point, 1st control, 2nd control, 2nd point)
@@ -34,10 +37,10 @@ void drawHead(int eyeMode) {
   bezier(rw(.2), rh(.6), rw(.3), rh(.75), rw(.6), rh(.75), rw(.71), rh(.6));
   stroke(0, 0, 0);
   strokeWeight(STROKE);
-  if (eyeMode == 0) {
+  if (eyeMode) {
     bezier(rw(.375), rh(.425), rw(.37), rh(.43), rw(.35), rh(.49), rw(.35), rh(.51)); //right eye
     bezier(rw(.56), rh(.425), rw(.555), rh(.43), rw(.54), rh(.5), rw(.54), rh(.51)); //left eye
-  } else if (eyeMode == 1) {
+  } else {
     beginShape(POLYGON);
     vertex(rw(.35), rh(.42));
     vertex(rw(.4), rh(.45));
@@ -48,9 +51,9 @@ void drawHead(int eyeMode) {
     vertex(rw(.5), rh(.45));
     vertex(rw(.56), rh(.5));
     endShape();
-  } else if (eyeMode == 2) {
+  } //else if (eyeMode == 2) {
     
-  }
+  //}
   
   fill(254, 150, 141);
   beginShape(POLYGON);
@@ -98,12 +101,7 @@ void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
   size(500, 500);
-  try {
-    arduino = new Arduino(this, Arduino.list()[0], 57600);
-  }
-  catch (ArrayIndexOutOfBoundsException e) {
-    arduinoEnabled = false;
-  }
+  arduino = new Arduino(this, Arduino.list()[0], 57600);
 }
 void drawEars() {
   strokeWeight(STROKE);
@@ -119,26 +117,30 @@ void drawEars() {
 }
 void draw() {
   int light;
-  int sound;
-  int offset;
   int bg;
-  if (arduinoEnabled) {
-    light = arduino.analogRead(5);
-    sound = arduino.analogRead(4);
-    bg = Math.round(light*(1023/255.0));
-  } else {
-    light = 200;
-    sound = 0;
-    bg = 100;
-  }
+  float tailRotate;
+  float tailX;
+  float tailY;
+  light = arduino.analogRead(5);
+  bg = Math.round(light*(1023/255.0));
   background(bg, bg, bg);
-  if (sound > 350) {
-    offset = trw((sound - 340)/5000.0);
-  } else offset = 0;
-  translate(WIDTH/2.0+offset, HEIGHT/2.0);
+  fill(170, 170, 170);
+  noStroke();
+  rect(0, HEIGHT-trh(.2), WIDTH, HEIGHT);
+  stroke(0, 0, 0);
+  fill(255, 255, 255);
+  translate(WIDTH/2.0, HEIGHT/2.0);
   drawEars();
   drawLeft();
+  tailRotate = 90-90*(((light > 150) ? 150 : light)/150.0);
+  tailX = tailRotate/90.0*trw(.4);
+  tailY = tailRotate/90.0*trh(.1);
+  //System.out.println(String.format("%f %f", tailX, tailY));
+  translate(tailX, tailY);
+  rotate(radians(tailRotate));
   drawTail();
+  rotate(radians(-tailRotate));
+  translate(-tailX, -tailY);
   drawBody();
-  drawHead(light < 260 ? 1 : 0);
+  drawHead(light > 25);
 }
