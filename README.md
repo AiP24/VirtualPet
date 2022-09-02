@@ -1,6 +1,8 @@
-![](fokusu-300.png)  
+![](assets/sukon-300.png)  
 Virtual Pet
 =============
+
+To whom it may concern: all the images are stored in `assets/`  
 
 In this project you will write a program using [Processing](https://processing.org) that displays any animal of your choosing. You can use almost any drawing functions that you would like, you can find the full list at the [Processing Reference](https://processing.org/reference) (See note below).  Your program will need to be divided into at least two functions `void setup()` and `void draw()`. You may find slides of the [apjavaProcessing slide presentation](https://docs.google.com/presentation/d/1sqbareaFmF9fMcp0XOl3hRO6hAlrU5WIaj4V-Kd3eDI/edit?usp=sharing) helpful. 
 
