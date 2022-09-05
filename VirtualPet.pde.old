@@ -1,22 +1,10 @@
 import processing.serial.*;
-Serial serial;
-//Arduino code moved to Arduino C to make use of the CircuitPlayground library
+import cc.arduino.*;
+Arduino arduino;  
 
 static int WIDTH = 500;
 static int HEIGHT = 500;
 static int STROKE = Math.round(WIDTH*.015);
-static float LIGHTMAX = 50;
-float tailRotate;
-float tailX;
-float tailY;
-float accelX;
-float accelY;
-float accelZ;
-float light;
-float sound;
-String rawJson = "";
-int temp;
-int bg;
 
 static int trw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos);
@@ -113,7 +101,7 @@ void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
   size(500, 500);
-  serial = new Serial(this, Serial.list()[0], 9600);
+  arduino = new Arduino(this, Arduino.list()[0], 57600);
 }
 void drawEars() {
   strokeWeight(STROKE);
@@ -128,23 +116,13 @@ void drawEars() {
   fill(255, 255, 255);
 }
 void draw() {
-  if ( serial.available() > 0){
-    System.out.println("_");
-    rawJson = serial.readStringUntil('\n');
-    if (rawJson == null || rawJson.equals("") || rawJson.equals("\n")) {System.out.println("NO DATA"); return;}
-    serial.clear();
-    System.out.println(rawJson);
-    JSONObject jsonData = parseJSONObject(rawJson);
-    light = jsonData.getInt("light");
-    sound = jsonData.getInt("sound");
-    temp = jsonData.getInt("temp");
-    accelX = jsonData.getFloat("accelX");
-    accelY = jsonData.getFloat("accelY");
-    accelZ = jsonData.getFloat("accelZ");
-    System.out.print(accelX + " " + accelY + " " + accelZ + "\n");
-    System.out.print(light + " " + sound + " " + temp + "\n");
-  } else {return;}
-  bg = Math.round(255*(((light > LIGHTMAX) ? LIGHTMAX : light)/LIGHTMAX));
+  int light;
+  int bg;
+  float tailRotate;
+  float tailX;
+  float tailY;
+  light = arduino.analogRead(5);
+  bg = Math.round(light*(1023/255.0));
   background(bg, bg, bg);
   fill(170, 170, 170);
   noStroke();
@@ -154,7 +132,7 @@ void draw() {
   translate(WIDTH/2.0, HEIGHT/2.0);
   drawEars();
   drawLeft();
-  tailRotate = 90-90*(((light > LIGHTMAX) ? LIGHTMAX : light)/LIGHTMAX);
+  tailRotate = 90-90*(((light > 150) ? 150 : light)/150.0);
   tailX = tailRotate/90.0*trw(.4);
   tailY = tailRotate/90.0*trh(.1);
   //System.out.println(String.format("%f %f", tailX, tailY));
@@ -164,5 +142,5 @@ void draw() {
   rotate(radians(-tailRotate));
   translate(-tailX, -tailY);
   drawBody();
-  drawHead(light > LIGHTMAX*(3.0/4));
+  drawHead(light > 25);
 }
