@@ -17,6 +17,8 @@ float sound;
 String rawJson = "";
 int temp;
 int bg;
+float accelZOffset = 0;
+float accelYOffset;
 
 static int trw(float xPos) { //Relative to Width
   return Math.round(WIDTH*xPos);
@@ -140,18 +142,26 @@ void draw() {
     temp = jsonData.getInt("temp");
     accelX = jsonData.getFloat("accelX");
     accelY = jsonData.getFloat("accelY");
-    accelZ = jsonData.getFloat("accelZ");
+    accelZ = jsonData.getFloat("accelZ") - 9.7; //gravity
     System.out.print(accelX + " " + accelY + " " + accelZ + "\n");
     System.out.print(light + " " + sound + " " + temp + "\n");
   } else {return;}
   bg = Math.round(255*(((light > LIGHTMAX) ? LIGHTMAX : light)/LIGHTMAX));
   background(bg, bg, bg);
-  fill(170, 170, 170);
+  fill(170, 170, 190);
   noStroke();
   rect(0, HEIGHT-trh(.2), WIDTH, HEIGHT);
   stroke(0, 0, 0);
   fill(255, 255, 255);
-  translate(WIDTH/2.0, HEIGHT/2.0);
+  //if (abs(accelY) > 10) {
+  //  accelYOffset = ((abs(accelY) - 10)/10)*(WIDTH*((accelY >= 0) ? .5: -.5));
+  //  //rotate(radians(((accelY - 10) / 10) * 45)); //doesn't work very well
+  //} else accelYOffset = 0;
+  //if (abs(accelZ) > 10) {
+  //  accelZOffset = ((abs(accelZ) - 10)/15)*(HEIGHT*((accelZ >= 0) ? -.5: .5)); //height opposite direction from IRL
+  //} else accelZOffset = 0;
+  accelYOffset = (abs(accelY) > 1.5) ? (abs(accelY) / 20) * (WIDTH*((accelY >= 0) ? .5: -.5)) : 0;
+  translate(WIDTH/2.0+accelYOffset, HEIGHT/2.0+accelZOffset);
   drawEars();
   drawLeft();
   tailRotate = 90-90*(((light > LIGHTMAX) ? LIGHTMAX : light)/LIGHTMAX);
@@ -164,5 +174,5 @@ void draw() {
   rotate(radians(-tailRotate));
   translate(-tailX, -tailY);
   drawBody();
-  drawHead(light > LIGHTMAX*(3.0/4));
+  drawHead(light > LIGHTMAX*(3.0/4) && abs(accelY) < 1.5 && abs(accelZ) < 1.5);
 }
