@@ -111,6 +111,11 @@ void drawTail() {
   bezierVertex(rw(.9), rh(.9), rw(.75), rh(.85), rw(.65), rh(.85)); //end
   endShape();
 }
+void keyPressed() {
+  if (keyCode == ENTER || keyCode == RETURN) {
+    saveFrame("sukon-screenshot.png");
+  }
+}
 void setup() {
   //can't use variables in the size function
   //please hardcode to match WIDTH and HEIGHT
